@@ -12,7 +12,7 @@ model = AutoModel.from_pretrained(MODEL_NAME, device_map="auto").to(DEVICE)
 def get_embeddings(img):
   input = processor(images=img, return_tensors="pt").to(DEVICE)
   with torch.no_grad():
-    my_embedding = model.get_image_features(**input).detach().squeeze()
+    my_embedding = model.get_image_features(**input).detach().squeeze().tolist()
   return my_embedding
 
 with gr.Blocks() as demo:
