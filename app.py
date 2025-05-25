@@ -27,14 +27,12 @@ def get_embedding(img):
 
 def find_in_art(img):
   target_embedding = get_embedding(img)
-  dists = euclidean_distances(crop_embeddings, target_embedding.reshape(1,-1)).reshape(-1)
+  dists = euclidean_distances(crop_embeddings, [target_embedding]).reshape(-1)
   idxs_by_dist = dists.argsort()
   all_crops_by_dist = crop_names[idxs_by_dist]
 
-  # TODO: filter repeated ids
   seen = set()
   crops_by_dist = []
-
   for crop_name in all_crops_by_dist:
     qid = crop_name.split("_")[0]
     if (qid not in seen):
