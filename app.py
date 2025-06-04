@@ -11,7 +11,7 @@ MODEL_NAME = "google/siglip2-giant-opt-patch16-256"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 processor = AutoProcessor.from_pretrained(MODEL_NAME)
-model = AutoModel.from_pretrained(MODEL_NAME, device_map="auto").to(DEVICE)
+model = AutoModel.from_pretrained(MODEL_NAME, device_map="auto")#.to(DEVICE)
 
 with open("./art-crops_siglip2.json", "r") as ifp:
   embeddings_data = json.load(ifp)
@@ -20,7 +20,7 @@ crop_names = np.array(list(embeddings_data.keys()))
 crop_embeddings = np.array(list(embeddings_data.values()))
 
 def get_embedding(img):
-  input = processor(images=img, return_tensors="pt").to(DEVICE)
+  input = processor(images=img, return_tensors="pt")#.to(DEVICE)
   with torch.no_grad():
     my_embedding = model.get_image_features(**input).detach().squeeze().tolist()
   return my_embedding
