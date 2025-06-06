@@ -3,7 +3,7 @@ import json
 import numpy as np
 import torch
 
-from sklearn.metrics import euclidean_distances
+from sklearn.metrics.pairwise import euclidean_distances, cosine_distances
 
 from transformers import AutoModel, AutoProcessor
 
@@ -27,7 +27,7 @@ def get_embedding(img):
 
 def find_in_art(img):
   target_embedding = get_embedding(img)
-  dists = euclidean_distances(crop_embeddings, [target_embedding]).reshape(-1)
+  dists = cosine_distances(crop_embeddings, [target_embedding]).reshape(-1)
   idxs_by_dist = dists.argsort()
   all_crops_by_dist = crop_names[idxs_by_dist]
 
