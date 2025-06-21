@@ -13,7 +13,7 @@ MODEL_NAME = "google/siglip2-giant-opt-patch16-256"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 processor = AutoProcessor.from_pretrained(MODEL_NAME)
-model = AutoModel.from_pretrained(MODEL_NAME, device_map="auto")#.to(DEVICE)
+model = AutoModel.from_pretrained(MODEL_NAME)#.to(DEVICE)
 
 with open("./art-crops_siglip2.json", "r") as ifp:
   embeddings_data = json.load(ifp)
@@ -46,7 +46,7 @@ def get_painting_order(img):
 def display_top_painting(img):
   painting_order = get_painting_order(img)
   top_id_obj = painting_order[0]
-  top_id, top_obj = top_id_obj.split("_")
+  top_id = top_id_obj.split("_")[0]
   response = requests.get(f"https://acervos-digitais.github.io/herbario-media/imgs/arts/900/{top_id}.jpg")
   return PImage.open(BytesIO(response.content))
 
