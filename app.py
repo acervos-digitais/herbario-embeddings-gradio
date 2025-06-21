@@ -1,10 +1,12 @@
 import gradio as gr
 import json
 import numpy as np
+import requests
 import torch
 
+from io import BytesIO
+from PIL import Image as PImage
 from sklearn.metrics.pairwise import euclidean_distances, cosine_distances
-
 from transformers import AutoModel, AutoProcessor
 
 MODEL_NAME = "google/siglip2-giant-opt-patch16-256"
@@ -25,7 +27,7 @@ def get_embedding(img):
     my_embedding = model.get_image_features(**input).detach().squeeze().tolist()
   return my_embedding
 
-def find_in_art(img):
+def get_painting_order(img):
   target_embedding = get_embedding(img)
   dists = cosine_distances(crop_embeddings, [target_embedding]).reshape(-1)
   idxs_by_dist = dists.argsort()
@@ -41,17 +43,34 @@ def find_in_art(img):
 
   return crops_by_dist
 
+def display_top_painting(img):
+  painting_order = get_painting_order(img)
+  top_id_obj = painting_order[0]
+  top_id, top_obj = top_id_obj.split("_")
+  response = requests.get(f"https://acervos-digitais.github.io/herbario-media/imgs/arts/900/{top_id}.jpg")
+  return PImage.open(BytesIO(response.content))
+
 
 with gr.Blocks() as demo:
+  gr.Markdown("# Image to Closest Painting")
   gr.Interface(
-    fn=get_embedding,
+    fn=display_top_painting,
+    inputs="image",
+    outputs="image",
+    flagging_mode="never",
+  )
+
+  gr.Markdown("# Image to Painting Similarity Ranking")
+  gr.Interface(
+    fn=get_painting_order,
     inputs="image",
     outputs="json",
     flagging_mode="never",
   )
 
+  gr.Markdown("# Image to SigLip2 Embeddings")
   gr.Interface(
-    fn=find_in_art,
+    fn=get_embedding,
     inputs="image",
     outputs="json",
     flagging_mode="never",
