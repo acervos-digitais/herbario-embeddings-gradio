@@ -5,17 +5,33 @@ import requests
 import torch
 
 from io import BytesIO
+from os import path
 from PIL import Image as PImage
+from urllib import request
+
 from sklearn.metrics.pairwise import euclidean_distances, cosine_distances
 from transformers import AutoModel, AutoProcessor
+
+EMBEDS_URL = "https://media.githubusercontent.com/media/acervos-digitais/herbario-data/main/json/20250705_art-crops.json"
 
 MODEL_NAME = "google/siglip2-giant-opt-patch16-256"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
+def download_file(url, local_path="."):
+  file_name = url.split("/")[-1]
+  file_path = path.join(local_path, file_name)
+
+  with request.urlopen(request.Request(url), timeout=30.0) as response:
+    if response.status == 200:
+      with open(file_path, "wb") as f:
+        f.write(response.read())
+  return file_path
+
 processor = AutoProcessor.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)#.to(DEVICE)
 
-with open("./art-crops_siglip2.json", "r") as ifp:
+embeddings_path = download_file(EMBEDS_URL)
+with open(embeddings_path, "r") as ifp:
   embeddings_data = json.load(ifp)
 
 crop_names = np.array(list(embeddings_data.keys()))
