@@ -1,1 +1,1 @@
-art-crops_siglip2.json filter=lfs diff=lfs merge=lfs -text
+20250619_art-crops.json filter=lfs diff=lfs merge=lfs -text

@@ -15,7 +15,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 processor = AutoProcessor.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)#.to(DEVICE)
 
-with open("./art-crops_siglip2.json", "r") as ifp:
+with open("./20250619_art-crops.json", "r") as ifp:
   embeddings_data = json.load(ifp)
 
 crop_names = np.array(list(embeddings_data.keys()))
