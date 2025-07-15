@@ -71,6 +71,7 @@ with gr.Blocks() as demo:
   gr.Markdown("# Image to Closest Painting")
   gr.Interface(
     fn=display_top_painting,
+    api_name="closest-painting",
     inputs="image",
     outputs="image",
     flagging_mode="never",
@@ -79,6 +80,7 @@ with gr.Blocks() as demo:
   gr.Markdown("# Image to Painting Similarity Ranking")
   gr.Interface(
     fn=get_painting_order,
+    api_name="similarity-ranking",
     inputs="image",
     outputs="json",
     flagging_mode="never",
@@ -87,10 +89,11 @@ with gr.Blocks() as demo:
   gr.Markdown("# Image to SigLip2 Embeddings")
   gr.Interface(
     fn=get_embedding,
+    api_name="embedding",
     inputs="image",
     outputs="json",
     flagging_mode="never",
   )
 
 if __name__ == "__main__":
-   demo.launch()
+  demo.launch()
