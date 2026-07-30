@@ -2,35 +2,44 @@ import gradio as gr
 import json
 import numpy as np
 import requests
+import tarfile
 import torch
 
 from io import BytesIO
-from os import path
+from os import path, remove
 from PIL import Image as PImage
 from urllib import request
 
 from sklearn.metrics.pairwise import euclidean_distances, cosine_distances
 from transformers import AutoModel, AutoProcessor
 
-EMBEDS_URL = "https://media.githubusercontent.com/media/acervos-digitais/herbario-data/main/json/20250705_art-crops.json"
+# TODO: this is a gz file now
+EMBEDS_URL = "https://media.githubusercontent.com/media/acervos-digitais/herbario-data/main/json/20250705_crops_owlv2.json.gz"
 
 MODEL_NAME = "google/siglip2-giant-opt-patch16-256"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-def download_file(url, local_path="."):
-  file_name = url.split("/")[-1]
-  file_path = path.join(local_path, file_name)
+def download_extract_file(url, local_path="."):
+  gz_file_name = url.split("/")[-1]
+  gz_file_path = path.join(local_path, gz_file_name)
+  file_path = gz_file_path.replace(".gz", "")
 
   with request.urlopen(request.Request(url), timeout=30.0) as response:
     if response.status == 200:
-      with open(file_path, "wb") as f:
+      with open(gz_file_path, "wb") as f:
         f.write(response.read())
+
+  tar = tarfile.open(gz_file_path, "r:gz")
+  tar.extractall(local_path, filter="data")
+  tar.close()
+  remove(gz_file_path)
+
   return file_path
 
 processor = AutoProcessor.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)#.to(DEVICE)
 
-embeddings_path = download_file(EMBEDS_URL)
+embeddings_path = download_extract_file(EMBEDS_URL)
 with open(embeddings_path, "r") as ifp:
   embeddings_data = json.load(ifp)
 
