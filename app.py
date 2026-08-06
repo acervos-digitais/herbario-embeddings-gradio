@@ -13,7 +13,7 @@ from urllib import request
 from sklearn.metrics.pairwise import euclidean_distances, cosine_distances
 from transformers import AutoModel, AutoProcessor
 
-# TODO: this is a gz file now
+IMGS_URL = "https://acervos-digitais.github.io/herbario-media/imgs/arts/900"
 EMBEDS_URL = "https://media.githubusercontent.com/media/acervos-digitais/herbario-data/main/json/20250705_crops_owlv2.json.gz"
 
 MODEL_NAME = "google/siglip2-giant-opt-patch16-256"
@@ -47,10 +47,10 @@ crop_names = np.array(list(embeddings_data.keys()))
 crop_embeddings = np.array(list(embeddings_data.values()))
 
 def get_embedding(img):
-  input = processor(images=img, return_tensors="pt")#.to(DEVICE)
+  inputs = processor(images=img, return_tensors="pt")#.to(DEVICE)
   with torch.no_grad():
-    my_embedding = model.get_image_features(**input).detach().squeeze().tolist()
-  return my_embedding
+    img_embedding = model.get_image_features(**inputs).pooler_output.detach().squeeze().numpy()
+  return (img_embedding / np.linalg.norm(img_embedding)).tolist()
 
 def get_painting_order(img):
   target_embedding = get_embedding(img)
@@ -72,7 +72,7 @@ def display_top_painting(img):
   painting_order = get_painting_order(img)
   top_id_obj = painting_order[0]
   top_id = top_id_obj.split("_")[0]
-  response = requests.get(f"https://acervos-digitais.github.io/herbario-media/imgs/arts/900/{top_id}.jpg")
+  response = requests.get(f"{IMGS_URL}/{top_id}.jpg")
   return PImage.open(BytesIO(response.content))
 
 
