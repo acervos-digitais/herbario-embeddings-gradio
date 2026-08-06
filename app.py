@@ -14,7 +14,7 @@ from sklearn.metrics.pairwise import euclidean_distances, cosine_distances
 from transformers import AutoModel, AutoProcessor
 
 IMGS_URL = "https://acervos-digitais.github.io/herbario-media/imgs/arts/900"
-EMBEDS_URL = "https://media.githubusercontent.com/media/acervos-digitais/herbario-data/main/json/20250705_crops_owlv2.json.gz"
+EMBEDS_URL = "https://media.githubusercontent.com/media/acervos-digitais/herbario-data/main/json/20260801_crops_all.json.gz"
 
 MODEL_NAME = "google/siglip2-giant-opt-patch16-256"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
