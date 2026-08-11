@@ -1,5 +1,5 @@
 ---
-title: Herbário Embeddings by SigLIP2
+title: Meta-Acervos Embeddings by SigLIP2
 emoji: 🌴🛏️
 colorFrom: blue
 colorTo: pink
